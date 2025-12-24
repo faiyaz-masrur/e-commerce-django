@@ -18,12 +18,12 @@ class UserManager(BaseUserManager):
         return self.create_user(email, password, **extra_fields)
 
 
-class User(AbstractBaseUser, PermissionsMixin):
-    email = models.EmailField(unique=True, db_index=True)
+class User(AbstractBaseUser):
+    email = models.EmailField(unique=True)
     name = models.CharField(max_length=255, db_index=True)
-    is_admin = models.BooleanField(default=False, db_index=True)
-    is_active = models.BooleanField(default=True, db_index=True)
-    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
+    is_admin = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     objects = UserManager()
@@ -34,5 +34,3 @@ class User(AbstractBaseUser, PermissionsMixin):
     def __str__(self):
         return self.name
 
-    class Meta:
-        ordering = ['-created_at']

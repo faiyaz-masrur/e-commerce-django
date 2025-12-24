@@ -16,17 +16,16 @@ class Product(models.Model):
     STATUS_CHOICES = [
         ('active', 'Active'),
         ('inactive', 'Inactive'),
-        ('discontinued', 'Discontinued'),
     ]
     
     name = models.CharField(max_length=255, db_index=True)
-    sku = models.CharField(max_length=100, unique=True, db_index=True)
+    sku = models.CharField(max_length=100, unique=True)
     description = models.TextField()
     price = models.DecimalField(max_digits=10, decimal_places=2)
     stock = models.IntegerField()
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='active', db_index=True)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='active')
     categories = models.ManyToManyField(Category, related_name='products', through='ProductCategory')
-    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
+    created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
