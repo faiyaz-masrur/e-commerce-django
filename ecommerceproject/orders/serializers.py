@@ -13,6 +13,15 @@ class OrderItemSerializer(serializers.ModelSerializer):
         read_only_fields = ['id', 'quantity', 'price', 'subtotal']
 
 
+class PaymentDetailSerializer(serializers.Serializer):
+    """Nested serializer for payment details in order"""
+    id = serializers.IntegerField(read_only=True)
+    provider = serializers.CharField(read_only=True)
+    transaction_id = serializers.CharField(read_only=True)
+    status = serializers.CharField(read_only=True)
+    created_at = serializers.DateTimeField(read_only=True)
+
+
 class OrderCreateSerializer(serializers.Serializer):
     items = serializers.ListField(
         child=serializers.DictField(
@@ -84,11 +93,26 @@ class OrderSerializer(serializers.ModelSerializer):
     user_id = serializers.CharField(source='user.id', read_only=True)
     user_name = serializers.CharField(source='user.name', read_only=True)
     items = OrderItemSerializer(many=True, read_only=True)
+    payment = serializers.SerializerMethodField()
 
     class Meta:
         model = Order
-        fields = ['id', 'user_id', 'user_name', 'total_amount', 'status', 'items', 'created_at', 'updated_at']
+        fields = ['id', 'user_id', 'user_name', 'total_amount', 'status', 'items', 'payment', 'created_at', 'updated_at']
         read_only_fields = ['id', 'total_amount', 'status', 'created_at', 'updated_at']
+    
+    def get_payment(self, obj):
+        """Get payment details if payment exists for this order"""
+        try:
+            payment = obj.payment
+            return {
+                'id': payment.id,
+                'provider': payment.provider,
+                'transaction_id': payment.transaction_id,
+                'status': payment.status,
+                'created_at': payment.created_at,
+            }
+        except:
+            return None
 
 
 class OrderListSerializer(serializers.ModelSerializer):
